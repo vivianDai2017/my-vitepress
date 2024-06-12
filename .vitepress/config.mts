@@ -16,7 +16,11 @@ export default defineConfig({
             text: '名称',
             items: [
                 { text: 'npm', link: '/src/npm' },
+                { text: 'pnpm', link: '/src/pnpm' },
                 { text: 'Niginx', link: '/src/Nginx' },
+                { text: '部署', link: '/src/部署' },
+                { text: '公司文献库', link: '/src/公司文献库' },
+                { text: '其他', link: '/src/其他' }
             ]
         },
         {
