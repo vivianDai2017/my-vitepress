@@ -1,0 +1,1 @@
+import{_ as c,c as l,o as s,a1 as n}from"./chunks/framework.B2LAFC3B.js";const g=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"src/其他.md","filePath":"src/其他.md"}'),e={name:"src/其他.md"},i=n("",7),o=[i];function a(p,t,d,r,C,u){return s(),l("div",null,o)}const O=c(e,[["render",a]]);export{g as __pageData,O as default};

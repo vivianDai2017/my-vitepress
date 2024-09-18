@@ -1,0 +1,1 @@
+import{_ as e,c as t,o,a1 as r}from"./chunks/framework.B2LAFC3B.js";const m=JSON.parse('{"title":"文献库数据说明","description":"","frontmatter":{},"headers":[],"relativePath":"src/公司文献库.md","filePath":"src/公司文献库.md"}'),n={name:"src/公司文献库.md"},a=r("",2),_=[a];function c(s,i,d,p,l,h){return o(),t("div",null,_)}const u=e(n,[["render",c]]);export{m as __pageData,u as default};

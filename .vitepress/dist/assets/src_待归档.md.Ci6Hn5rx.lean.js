@@ -1,0 +1,1 @@
+import{_ as s,c as i,o as a,a1 as n}from"./chunks/framework.B2LAFC3B.js";const E=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"src/待归档.md","filePath":"src/待归档.md"}'),t={name:"src/待归档.md"},l=n("",14),e=[l];function h(p,k,r,d,o,g){return a(),i("div",null,e)}const F=s(t,[["render",h]]);export{E as __pageData,F as default};
