@@ -22,7 +22,7 @@ export default defineConfig({
                 { text: 'jenkins', link: '/src/jenkins' },
                 { text: 'docker', link: '/src/docker' },
                 { text: '公司文献库', link: '/src/公司文献库' },
-                { text: '修改host文件', link: '/scr/修改本地hosts文件'},
+                { text: '修改host文件', link: '/src/修改本地hosts文件'},
                 { text: '其他', link: '/src/其他' },
                 { text: '待归档', link: '/src/待归档' },
             ]
