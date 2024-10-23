@@ -167,6 +167,7 @@ scp /Users/vivian/Downloads/jenkins.tar root@121.37.152.139:/opt/docker-images
 docker load -i jenkins.tar
 ```
 
+## 创建网桥并运行jenkins\nginx容器
 ### 在 Docker 中创建网桥网络
 ```sh
 docker network create jenkins
@@ -255,6 +256,9 @@ docker run -d --name jenkins --network jenkins -p 8080:8080 -p 50000:50000 -v /v
 docker volume rm <卷名称>
 
 docker run -d --name jenkins --network jenkins -p 8080:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v jenkins_home:/var/jenkins_home -v /etc/localtime:/etc/localtime  jenkins/jenkins
+
+//20241123
+docker run -d -u root --name jenkins --network jenkins -p 8080:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker -v jenkins_home:/var/jenkins_home -v /etc/localtime:/etc/localtime -e TZ=Asia/Shanghai jenkins/jenkins
 ```
 
 这里解释一下各个参数的作用：
@@ -262,9 +266,14 @@ docker run -d --name jenkins --network jenkins -p 8080:8080 -p 50000:50000 -v /v
 - `-d`: 后台运行容器。
 - `--name jenkins`: 为容器命名为 `jenkins`。
 - `--network jenkins`: 将容器连接到名为 `jenkins` 的 Docker 网络。
-- `-p 8080:8080`: 将主机的 8080 端口映射到容器的 8080 端口（Jenkins 的 Web UI）。
+- `-p 8080:8080`: 将主机的 8080 端口映射到容器的 8080 端口（Jenkins 的 Web UI） 不加这个会有问题。
 - `-p 50000:50000`: 将主机的 50000 端口映射到容器的 50000 端口（Jenkins 的代理通信端口）。
 - `-v jenkins_home:/var/jenkins_home`: 将主机上的 `jenkins_home` 目录挂载到容器的 `/var/jenkins_home` 目录，以持久化 Jenkins 数据。
+**新增加的， 不然运行不起来**
+- `-u root`: 以 **root** 用户运行， 可以解决权限问题
+- `-v /var/run/docker.sock:/var/run/docker.sock`: docker 相关文件
+- `-v /usr/bin/docker:/usr/bin/docker`: docker 相关文件 ，解决jenkins项目构建的时候报错: docker: not found
+- `-e TZ=Asia/Shanghai nginx`: 配置时区
 
 完成这些步骤后，你应该可以通过访问 `http://<你的服务器IP>:8080` 来访问 Jenkins 的 Web UI。
 
@@ -290,22 +299,44 @@ cat id_rsa
 1. **执行启动命令**
 ```sh
 docker run -d --name nginx --network jenkins -p 80:80  -v /etc/nginx:/etc/nginx nginx
+
+//20241023
+docker run -d --name nginx --network jenkins -p 80:80 -p 443:443 -p 8081-8100:8081-8100 -v /etc/nginx:/etc/nginx -e TZ=Asia/Shanghai nginx
+- **8080**端口被jenkins占用了
+- **-e TZ=Asia/Shanghai** 时区设置
 ```
 
 
 
 ## jenkins的配置（测试环境）
+- 测试文件
+```bash
+pipeline {
+    agent any
+
+    stages {
+        stage('test') {
+            steps {
+                 script {
+                    sh 'echo "Jenkins is running as: $(whoami)"'
+                    docker.build('hello-hh')
+                }
+            }
+        }
+    }
+}
+```
 `管理员密码`：364308956cf34a55b899106363cf6fac
 
 `管理员账号、密码、邮箱`：admin /admin123/ daiweiqin@woshikeji.net
 1. **安装推荐的插件**
 2. **安装 NodeJS 插件**
 3. **安装 Gitee 插件**
-4. **NodeJS 20.14.0**
+4. **NodeJS 20.14.0**  
 5. **安装Docker Pipeline**
 6. **安装docker**
 7. **安装CloudBees Docker Build and Publish**
-8. **安装job cacher**
+8. **安装job cacher**  可以不安装
 5. **jenkins通过SSH凭证方式拉取Gitee代码**
     [link](https://blog.csdn.net/weixin_46107112/article/details/130847047)
     `因为测试服务器上已经有一对公私钥， 要重新生成一对`
@@ -317,14 +348,21 @@ docker run -d --name nginx --network jenkins -p 80:80  -v /etc/nginx:/etc/nginx 
     当 ssh-keygen 提示你输入文件名时，由于你已经在命令行指定了文件名，所以它会使用你提供的文件名。你只需按回车确认即可。接下来，你会被要求输入两次密钥的密码（passphrase），这一步是可选的，但推荐设置一个强密码以增加安全性
     id_rsa2 文件是私钥，id_rsa2.pub 是公钥。
     `
-    6. **配置Gitee SSH**
-    7. **配置Gitee 凭据**
+6. **配置Gitee SSH**
+    - 需要一对公私钥， 需要在jenkins 容器内部生成
+     1. 将公钥 添加到gitee 的 SSH 公钥列表中
+     2. 将私钥 在jenkins UI 页面 Jenkins--管理--Credentials（凭据）
+     3. 进入jenkin容器中， 执行`ssh -T git@gitee.com` 根据提示操作，会将gitee 添加到被信任的主机中 （这里如果不是在jenkins 容器中生成的公私钥， 有时候会提示权限问题）
+
+7. **配置Gitee 凭据**
+8. **沈化工**
+    - 使用的JSJ的个人gitee, 也需要一对公私钥 （可以本地生成一对公私钥）
 
 
 
 ## jenkins的配置（正式环境）
-`管理员密码`：4aced45723ce4c7ea8e0fc9df74507fe
-`管理员账号、密码、邮箱`：admin /admin123/ daiweiqin@woshikeji.net
+`管理员密码`：。。。。
+`管理员账号、密码、邮箱`：admin /adminagno58553/ daiweiqin@woshikeji.net
 
 ```bash
 # 启动 Nginx 容器，并挂载配置文件

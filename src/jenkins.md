@@ -13,3 +13,18 @@ Jenkins.instance.getItemByFullName(jobName).builds.each { build ->
     }
 }
 ```
+
+## 插件
+
+- **监控插件**
+
+  - **Prometheus metrics**
+
+    - **安装**
+
+      - 在Jenkins中，点击“Manage Jenkins”。
+      - 点击“Manage Plugins”。
+      - 在“Available”标签页中，搜索“Prometheus metrics”。
+      - 点击“Install without restart”按钮进行安装。
+
+    - **配置**
